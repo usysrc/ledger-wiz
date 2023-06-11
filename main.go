@@ -55,7 +55,8 @@ func runWizard(cmd *cobra.Command, args []string) error {
 
 func promptForAmount() string {
 	prompt := promptui.Prompt{
-		Label: "Amount",
+		Label:   "Amount",
+		Default: "€10",
 	}
 
 	result, err := prompt.Run()
@@ -113,7 +114,15 @@ func extractAccountsFromFile(filePath string) ([]string, error) {
 		match := regexp.MustCompile(`^\s*([\w:]+)\s{2,}`).FindStringSubmatch(line)
 		if len(match) == 2 {
 			account := strings.TrimSpace(match[1])
-			accounts = append(accounts, account)
+			found := false
+			for _, searchedAcc := range accounts {
+				if searchedAcc == account {
+					found = true
+				}
+			}
+			if !found {
+				accounts = append(accounts, account)
+			}
 		}
 	}
 
@@ -132,7 +141,7 @@ func promptForAccount() string {
 
 	fzfInput := strings.Join(accountLines, "\n")
 
-	cmd := exec.Command("fzf", "--multi")
+	cmd := exec.Command("fzf", "--multi", "--print-query")
 	cmd.Stderr = os.Stderr
 
 	stdout, err := cmd.StdoutPipe()
