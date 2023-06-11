@@ -16,9 +16,10 @@ import (
 
 func main() {
 	rootCmd := &cobra.Command{
-		Use:   "ledger-wizard",
+		Use:   "ledger-wizard <file>",
 		Short: "A wizard for adding a new ledger entry",
 		RunE:  runWizard,
+		Args:  cobra.ExactArgs(1),
 	}
 
 	if err := rootCmd.Execute(); err != nil {
@@ -27,17 +28,18 @@ func main() {
 }
 
 func runWizard(cmd *cobra.Command, args []string) error {
+	filePath := args[0]
+
 	reader := bufio.NewReader(os.Stdin)
 
 	date := promptForDate(reader)
 	description := promptForDescription(reader)
-	toAccount := promptForAccount()
-	fromAccount := promptForAccount()
+	toAccount := promptForAccount(filePath)
+	fromAccount := promptForAccount(filePath)
 	amount := promptForAmount()
 
 	ledgerEntry := buildLedgerEntry(date, description, toAccount, fromAccount, amount)
-
-	ledgerFile, err := os.OpenFile("ledger.txt", os.O_WRONLY|os.O_APPEND, 0644)
+	ledgerFile, err := os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -133,8 +135,8 @@ func extractAccountsFromFile(filePath string) ([]string, error) {
 	return uniqueAccounts, nil
 }
 
-func promptForAccount() string {
-	accountLines, err := extractAccountsFromFile("ledger.txt")
+func promptForAccount(filepath string) string {
+	accountLines, err := extractAccountsFromFile(filepath)
 	if err != nil {
 		panic(err)
 	}
