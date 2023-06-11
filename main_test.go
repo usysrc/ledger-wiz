@@ -13,6 +13,10 @@ func TestExtractAccountsFromFile(t *testing.T) {
 2015/10/12 Exxon
     Expenses:Auto:Gas         $10.00
     Liabilities:MasterCard   $-10.00
+
+2011/10/12 Exxon
+    Expenses:Auto:Gas         $8.00
+    Liabilities:MasterCard   $-5.00
 `
 	tmpfile, err := ioutil.TempFile("", "testledger.txt")
 	if err != nil {

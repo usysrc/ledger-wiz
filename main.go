@@ -101,28 +101,22 @@ func extractAccountsFromFile(filePath string) ([]string, error) {
 	}
 	defer file.Close()
 
-	var accounts []string
+	accounts := make(map[string]struct{})
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
 		line = strings.TrimSpace(line)
 		if line == "" || strings.HasPrefix(line, "#") {
-			continue
+			continue // Skip empty lines and lines starting with '#'
 		}
 
 		match := regexp.MustCompile(`^\s*([\w:]+)\s{2,}`).FindStringSubmatch(line)
 		if len(match) == 2 {
 			account := strings.TrimSpace(match[1])
-			found := false
-			for _, searchedAcc := range accounts {
-				if searchedAcc == account {
-					found = true
-				}
-			}
-			if !found {
-				accounts = append(accounts, account)
-			}
+
+			// Add account to the map
+			accounts[account] = struct{}{}
 		}
 	}
 
@@ -130,7 +124,13 @@ func extractAccountsFromFile(filePath string) ([]string, error) {
 		return nil, err
 	}
 
-	return accounts, nil
+	// Extract unique accounts from the map
+	uniqueAccounts := make([]string, 0, len(accounts))
+	for account := range accounts {
+		uniqueAccounts = append(uniqueAccounts, account)
+	}
+
+	return uniqueAccounts, nil
 }
 
 func promptForAccount() string {

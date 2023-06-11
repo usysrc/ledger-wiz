@@ -14,3 +14,7 @@
 	Expenses:Auto:Gas		€10
 	Liabilities:MasterCard		-€10
 
+2023/06/11 My
+	Expenses:Auto:Gas		€230
+	Liabilities:MasterCard		-€230
+
