@@ -152,7 +152,10 @@ func promptForAccount(filepath string) string {
 	}
 
 	cmd.Stdin = strings.NewReader(fzfInput)
-	cmd.Start()
+	err = cmd.Start()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	reader := bufio.NewReader(stdout)
 
@@ -169,7 +172,10 @@ func promptForAccount(filepath string) string {
 		}
 	}
 
-	cmd.Wait()
+	err = cmd.Wait()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	return accounts[0]
 }
